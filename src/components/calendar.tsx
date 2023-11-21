@@ -1,11 +1,22 @@
+/* eslint-disable */
 import dayjs from 'dayjs';
 import locale from 'dayjs/locale/en';
 import isTodayPlugin from 'dayjs/plugin/isToday';
 import objectPlugin from 'dayjs/plugin/toObject';
 import weekdayPlugin from 'dayjs/plugin/weekday';
-import { useEffect, useState } from 'react';
+import { JSXElementConstructor, Key, ReactElement, ReactNode, useEffect, useState } from 'react';
 import './calendar.css';
+type DateObject = {
+  day: number;
+  month: number;
+  year: number;
+  isCurrentMonth: boolean;
+  isCurrentDay: boolean;
+};
 
+type WeekObject = {
+  dates: DateObject[];
+};
 const Calendar = () => {
   const now = dayjs().locale({
     ...locale,
@@ -15,7 +26,7 @@ const Calendar = () => {
   dayjs.extend(isTodayPlugin);
 
   const [currentMonth, setCurrentMonth] = useState(now);
-  const [arrayOfDays, setArrayOfDays] = useState([]);
+  const [arrayOfDays, setArrayOfDays] = useState<WeekObject[]>([]);
   const [currentWeek, setCurrentWeek] = useState(Number);
   const nextMonth = () => {
     const plus = currentMonth.add(1, 'month');
@@ -116,7 +127,7 @@ const Calendar = () => {
 
       currentDate = currentDate.add(1, 'day');
     }
-
+    console.log(allDates)
     setArrayOfDays(allDates);
   };
 
@@ -127,19 +138,19 @@ const Calendar = () => {
   useEffect(() => {
     arrayOfDays.some((week, i) => {
       // console.log(week)
-      week.dates.some((d) => {
+      week.dates.some((d: { isCurrentDay: any; }) => {
         if (d.isCurrentDay) setCurrentWeek(i + 1);
       });
     });
   }, [arrayOfDays]);
 
   const renderCells = () => {
-    const rows = [];
-    let days = [];
+    const rows: any = [];
+    let days: any = [];
 
     arrayOfDays.forEach((week, index) => {
-      week.dates.forEach((d, i) => {
-        days.push(
+      week.dates.forEach((d: { isCurrentMonth: any; isCurrentDay: any; day: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined; }, i: Key | null | undefined) => {
+        days?.push(
           <div
             className={`col cell ${!d.isCurrentMonth ? 'disabled' : d.isCurrentDay ? 'selected' : ''
               }`}
@@ -165,7 +176,7 @@ const Calendar = () => {
     return <div className="body">{rows}</div>;
   };
 
-  const formateDateObject = (date) => {
+  const formateDateObject = (date: dayjs.Dayjs) => {
     const clonedObject = { ...date.toObject() };
 
     const formatedObject = {
